@@ -16,7 +16,7 @@ class CrudOperationsController extends Controller
     public function index()
     {
         $users = CrudOperations::with('getCountry')->paginate('5'); //with('getCountry') country get through relation public function in model 
-        return view('index',compact('users'));
+        return view('index', compact('users'));
     }
 
     /**
@@ -27,7 +27,7 @@ class CrudOperationsController extends Controller
     public function create()
     {
         $countries = Country::all();
-        return view('registration',compact('countries'));
+        return view('registration', compact('countries'));
     }
 
     /**
@@ -38,30 +38,31 @@ class CrudOperationsController extends Controller
      */
     public function store(Request $request)
     {
-
-        $this->validate($request,[
+        $this->validate($request, [
             'first_name' => 'required|min:5|max:10|string',
             'last_name' => 'required|min:5|max:10|string|different:first_name',
             'email' => 'required|email|unique:crud_operations,email',
             'contact' => 'numeric|nullable',
-            'address' => 'nullable|string|100',
-            'country_id' => 'required|exists:countries,id',
+            'address' => 'nullable|string|max:100', // Corrected the max length rule
+            'country' => 'required|exists:countries,id',
             'gender' => 'required|in:Male,Female',
             'hobbies' => 'required|array',
+            'hobbies.*' => 'string', // Ensuring each hobby is a string
             'profile' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            
         ]);
-        
+
         $requestData = $request->except(['_token']);
+
         // image upload code start
-        $imgName = 'lV'. rand() .'.' .$request->profile->extension();
-        $request->profile->move(public_path('profiles/'),$imgName);
+        $imgName = 'lV' . rand() . '.' . $request->profile->extension();
+        $request->profile->move(public_path('profiles/'), $imgName);
         $requestData['profile'] = $imgName;
         // image upload code end
 
         $store = CrudOperations::create($requestData);
-        return redirect()->route('crud.index')->with('success','User Inserted successfully.');
+        return redirect()->route('crud.index')->with('success', 'User Inserted successfully.');
     }
+
 
     /**
      * Display the specified resource.
@@ -72,7 +73,7 @@ class CrudOperationsController extends Controller
     public function show(CrudOperations $crud)
     {
         $countries = Country::all();
-        return view('show',compact('countries','crud'));
+        return view('show', compact('countries', 'crud'));
     }
 
     /**
@@ -84,7 +85,7 @@ class CrudOperationsController extends Controller
     public function edit(CrudOperations $crud)
     {
         $countries = Country::all();
-        return view('edit',compact('countries','crud'));
+        return view('edit', compact('countries', 'crud'));
     }
 
     /**
@@ -104,16 +105,15 @@ class CrudOperationsController extends Controller
         $crud->country = $request->country ?? $crud->country;
         $crud->gender = $request->gender ?? $crud->gender;
         $crud->hobbies = $request->hobbies ?? $crud->hobbies_arr;
-        if(isset($request->profile)){
+        if (isset($request->profile)) {
             // image upload code start
-            $imgName = 'lV'. rand() .'.' .$request->profile->extension();
-            $request->profile->move(public_path('profiles/'),$imgName);
+            $imgName = 'lV' . rand() . '.' . $request->profile->extension();
+            $request->profile->move(public_path('profiles/'), $imgName);
             $crud->profile = $imgName;
             // image upload code end
         }
         $crud->save();
-        return redirect()->route('crud.index')->with('success','User Edited successfully.');
-
+        return redirect()->route('crud.index')->with('success', 'User Edited successfully.');
     }
 
     /**
@@ -125,6 +125,6 @@ class CrudOperationsController extends Controller
     public function destroy(CrudOperations $crud)
     {
         $crud->delete();
-        return redirect()->route('crud.index')->with('danger','User Deleted successfully.');
+        return redirect()->route('crud.index')->with('danger', 'User Deleted successfully.');
     }
 }
