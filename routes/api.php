@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+// use App\Http\Controllers\API\ApiCrudOperations;
+// use Illuminate\Http\Request;
+// use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+// // API Crud Operations
+// Route::resource('apiCrud',ApiCrudOperations::class);
+
+
+
+
+//Route::get('/apisCrud', [ApiCrudOperations::class, 'index']);
